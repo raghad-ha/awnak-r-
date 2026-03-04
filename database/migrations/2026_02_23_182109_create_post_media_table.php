@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('post_media', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+       Schema::create('post_media', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('post_id')->constrained('posts')->cascadeOnDelete();
+    $table->enum('type', ['image','video']);
+    $table->string('path');
+    $table->string('thumbnail_path')->nullable();
+    $table->timestamps();
         });
     }
 

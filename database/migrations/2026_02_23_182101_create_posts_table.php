@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+    Schema::create('posts', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('author_user_id')->constrained('users')->cascadeOnDelete();
+    $table->text('body')->nullable();
+    $table->enum('visibility', ['public','followers','private'])->default('public');
+    $table->timestamps();
         });
     }
 

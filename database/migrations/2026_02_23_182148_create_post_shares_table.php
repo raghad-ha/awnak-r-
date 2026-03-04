@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('post_shares', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('original_post_id')->constrained('posts')->cascadeOnDelete();
+    $table->foreignId('shared_by_user_id')->constrained('users')->cascadeOnDelete();
+    $table->text('comment')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

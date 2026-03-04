@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chatbot_messages', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    Schema::create('chatbot_messages', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('session_id')->constrained('chatbot_sessions')->cascadeOnDelete();
+    $table->enum('sender', ['user','bot']);
+    $table->text('body');
+    $table->timestamps();
+});
+
     }
 
     /**

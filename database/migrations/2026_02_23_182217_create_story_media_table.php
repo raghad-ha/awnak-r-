@@ -10,10 +10,14 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('story_media', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+    {Schema::create('story_media', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('story_id')->constrained('stories')->cascadeOnDelete();
+    $table->enum('type', ['image','video']);
+    $table->string('path');
+    $table->string('thumbnail_path')->nullable();
+    $table->timestamps();
+
         });
     }
 

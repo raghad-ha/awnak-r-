@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+      Schema::create('stories', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('author_user_id')->constrained('users')->cascadeOnDelete();
+    $table->string('caption')->nullable();
+    $table->timestamp('expires_at')->nullable();
+    $table->timestamps();
         });
     }
 

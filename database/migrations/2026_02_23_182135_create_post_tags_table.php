@@ -10,10 +10,10 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('post_tags', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+    {Schema::create('post_tags', function (Blueprint $table) {
+    $table->foreignId('post_id')->constrained('posts')->cascadeOnDelete();
+    $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
+    $table->primary(['post_id','organization_id']);
         });
     }
 
