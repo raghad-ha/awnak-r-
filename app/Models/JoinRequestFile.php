@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class JoinRequestFile extends Model
 {
-    public function joinRequest() {
-    return $this->belongsTo(\App\Models\JoinRequest::class);
-}
+    protected $fillable = [
+        'join_request_id',
+        'file_path',
+        'file_type',
+    ];
+
+    public function joinRequest()
+    {
+        return $this->belongsTo(\App\Models\JoinRequest::class);
+    }
 }
