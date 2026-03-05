@@ -12,6 +12,14 @@ use App\Http\Controllers\Api\V1\Org\OrgApplicationController;
 use App\Http\Controllers\Api\V1\Chat\ConversationController;
 use App\Http\Controllers\Api\V1\Chat\MessageController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\Org\VolunteerEvaluationController;
+use App\Http\Controllers\Api\V1\Volunteer\OrganizationReviewController;
+use App\Http\Controllers\Api\V1\Admin\EvaluationActionController;
+use App\Http\Controllers\Api\V1\Social\PostController;
+use App\Http\Controllers\Api\V1\Social\LikeController;
+use App\Http\Controllers\Api\V1\Social\CommentController;
+use App\Http\Controllers\Api\V1\Social\ShareController;
+use App\Http\Controllers\Api\V1\Social\StoryController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/auth/register', [AuthController::class, 'register']);
@@ -44,6 +52,38 @@ Route::prefix('v1')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'read']);
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll']);
+
+    // Org evaluates volunteer
+    Route::post('/org/applications/{id}/evaluate', [VolunteerEvaluationController::class, 'store']);
+    Route::get('/org/evaluations', [VolunteerEvaluationController::class, 'index']); // optional
+
+    // Volunteer reviews org
+    Route::post('/volunteer/applications/{id}/review-organization', [OrganizationReviewController::class, 'store']);
+    Route::get('/volunteer/my-reviews', [OrganizationReviewController::class, 'myReviews']); // optional
+
+    // Admin actions warn/suspend/block
+    Route::post('/admin/volunteers/{id}/actions', [EvaluationActionController::class, 'store']);
+    Route::get('/admin/volunteers/{id}/actions', [EvaluationActionController::class, 'index']); // optional
+
+    // Posts
+    Route::get('/posts', [PostController::class, 'index']);          // feed
+    Route::post('/posts', [PostController::class, 'store']);         // create post + media + tags
+    Route::get('/posts/{id}', [PostController::class, 'show']);      // single post
+
+    // Likes
+    Route::post('/posts/{id}/like', [LikeController::class, 'like']);
+    Route::delete('/posts/{id}/like', [LikeController::class, 'unlike']);
+
+    // Comments
+    Route::get('/posts/{id}/comments', [CommentController::class, 'index']);
+    Route::post('/posts/{id}/comments', [CommentController::class, 'store']);
+
+    // Share (creates a new post_share record)
+    Route::post('/posts/{id}/share', [ShareController::class, 'store']);
+
+    Route::get('/stories', [StoryController::class, 'index']);      // active stories feed
+    Route::post('/stories', [StoryController::class, 'store']);     // create
+    Route::delete('/stories/{id}', [StoryController::class, 'destroy']); // delete own story
 });
 
         // Admin approval
