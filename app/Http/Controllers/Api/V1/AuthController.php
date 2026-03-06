@@ -45,6 +45,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        
         $data = $request->validate([
             'login'    => ['required','string'], // email or phone
             'password' => ['required','string'],
@@ -81,6 +82,7 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         $token = $user->createToken('api')->plainTextToken;
+        
 
         return response()->json([
             'success' => true,
