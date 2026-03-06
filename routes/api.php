@@ -65,10 +65,14 @@ Route::prefix('v1')->group(function () {
     Route::post('/admin/volunteers/{id}/actions', [EvaluationActionController::class, 'store']);
     Route::get('/admin/volunteers/{id}/actions', [EvaluationActionController::class, 'index']); // optional
 
-    // Posts
+
+    Route::middleware('social.access')->group(function () {
+
+   // Posts
     Route::get('/posts', [PostController::class, 'index']);          // feed
     Route::post('/posts', [PostController::class, 'store']);         // create post + media + tags
     Route::get('/posts/{id}', [PostController::class, 'show']);      // single post
+    Route::put('/posts/{id}/tags', [PostController::class, 'updateTags']);
 
     // Likes
     Route::post('/posts/{id}/like', [LikeController::class, 'like']);
@@ -83,7 +87,9 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/stories', [StoryController::class, 'index']);      // active stories feed
     Route::post('/stories', [StoryController::class, 'store']);     // create
-    Route::delete('/stories/{id}', [StoryController::class, 'destroy']); // delete own story
+    Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
+    });
+
 });
 
         // Admin approval

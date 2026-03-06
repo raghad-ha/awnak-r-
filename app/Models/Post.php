@@ -11,5 +11,9 @@ class Post extends Model
     public function media() { return $this->hasMany(\App\Models\PostMedia::class); }
     public function comments() { return $this->hasMany(\App\Models\Comment::class); }
     public function likes() { return $this->hasMany(\App\Models\PostLike::class); }
-    public function tags() { return $this->belongsToMany(\App\Models\Organization::class, 'post_tags'); }
+
+    public function tags()
+{
+    return $this->hasMany(\App\Models\PostTag::class);
+}
 }

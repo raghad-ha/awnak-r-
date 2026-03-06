@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {Schema::create('post_tags', function (Blueprint $table) {
+    $table->id();
     $table->foreignId('post_id')->constrained('posts')->cascadeOnDelete();
-    $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
-    $table->primary(['post_id','organization_id']);
-        });
+
+    $table->morphs('taggable'); // taggable_type + taggable_id
+
+    $table->foreignId('tagged_by_user_id')->constrained('users')->cascadeOnDelete();
+    $table->timestamps();
+
+    $table->unique(['post_id','taggable_type','taggable_id']);
+});
     }
 
     /**
