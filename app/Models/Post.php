@@ -17,3 +17,4 @@ class Post extends Model
     return $this->hasMany(\App\Models\PostTag::class);
 }
 }
+

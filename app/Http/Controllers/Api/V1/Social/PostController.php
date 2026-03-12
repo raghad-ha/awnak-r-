@@ -62,8 +62,15 @@ class PostController extends Controller
 
             // tags
             if (!empty($data['tag_organization_ids'])) {
-                $post->tags()->sync($data['tag_organization_ids']);
-            }
+    foreach ($data['tag_organization_ids'] as $orgId) {
+        \App\Models\PostTag::create([
+            'post_id' => $post->id,
+            'taggable_type' => \App\Models\Organization::class,
+            'taggable_id' => $orgId,
+            'tagged_by_user_id' => $user->id,
+        ]);
+    }
+}
 
             // media
             $files = $request->file('media', []);
@@ -90,4 +97,45 @@ class PostController extends Controller
             'data' => ['post' => $post->load(['media','tags'])],
         ], 201);
     }
+    public function updateTags(Request $request, $id)
+{
+    $user = $request->user();
+    abort_if(!$user, 401);
+
+    $data = $request->validate([
+        'tag_organization_ids' => ['nullable', 'array'],
+        'tag_organization_ids.*' => ['integer', 'exists:organizations,id'],
+    ]);
+
+    $post = Post::findOrFail($id);
+
+    abort_if($post->author_user_id !== $user->id, 403, 'You can only update your own post tags.');
+
+    DB::transaction(function () use ($post, $user, $data) {
+        $ids = $data['tag_organization_ids'] ?? [];
+
+        // remove old organization tags only
+        $post->tags()
+            ->where('taggable_type', \App\Models\Organization::class)
+            ->delete();
+
+        // insert new organization tags
+        foreach ($ids as $orgId) {
+            \App\Models\PostTag::create([
+                'post_id' => $post->id,
+                'taggable_type' => \App\Models\Organization::class,
+                'taggable_id' => $orgId,
+                'tagged_by_user_id' => $user->id,
+            ]);
+        }
+    });
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Post tags updated.',
+        'data' => [
+            'post' => $post->load(['media', 'tags.taggable']),
+        ],
+    ]);
+}
 }
