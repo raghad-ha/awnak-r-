@@ -20,8 +20,22 @@ use App\Http\Controllers\Api\V1\Social\LikeController;
 use App\Http\Controllers\Api\V1\Social\CommentController;
 use App\Http\Controllers\Api\V1\Social\ShareController;
 use App\Http\Controllers\Api\V1\Social\StoryController;
+use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\SkillController;
+use App\Http\Controllers\Api\V1\OrganizationController;
+use App\Http\Controllers\Api\V1\FeedController;
+use App\Http\Controllers\Api\V1\ChatbotSessionController;
+use App\Http\Controllers\Api\V1\VolunteerDirectoryController;
+
 
 Route::prefix('v1')->group(function () {
+
+  Route::get('/feed/posts', [FeedController::class, 'posts']);
+  Route::get('/feed/stories', [FeedController::class, 'stories']);
+
+  Route::post('/chatbot/sessions', [ChatbotSessionController::class, 'store']);
+  Route::get('/chatbot/sessions/{id}', [ChatbotSessionController::class, 'show']);
+  Route::post('/chatbot/sessions/{id}/messages', [ChatbotSessionController::class, 'message']);
 
     // Public Auth
     Route::post('/auth/register', [AuthController::class, 'register']);
@@ -31,8 +45,27 @@ Route::prefix('v1')->group(function () {
     Route::get('/opportunities', [PublicOpportunityController::class, 'index']);
     Route::get('/opportunities/{id}', [PublicOpportunityController::class, 'show']);
 
+    Route::get('/organizations', [OrganizationController::class, 'index']);
+    Route::get('/organizations/{id}', [OrganizationController::class, 'show']);
+    Route::get('/organizations/{id}/opportunities', [OrganizationController::class, 'opportunities']);
+    Route::get('/organizations/{id}/posts', [OrganizationController::class, 'posts']);
+
     // ✅ Protected routes
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/org/volunteers', [VolunteerDirectoryController::class, 'orgIndex']);
+        Route::get('/admin/volunteers', [VolunteerDirectoryController::class, 'adminIndex']);
+
+    Route::get('/org/volunteers', [VolunteerDirectoryController::class, 'orgIndex']);
+    Route::get('/admin/volunteers', [VolunteerDirectoryController::class, 'adminIndex']);
+
+    //profules api 
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile/volunteer', [ProfileController::class, 'updateVolunteer']);
+    Route::put('/profile/organization', [ProfileController::class, 'updateOrganization']);
+// skills api 
+    Route::get('/skills', [SkillController::class, 'index']);
+    Route::post('/skills', [SkillController::class, 'store']);
+    Route::put('/volunteers/me/skills', [SkillController::class, 'syncMySkills']);
 
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/me', [AuthController::class, 'me']);
@@ -90,10 +123,21 @@ Route::prefix('v1')->group(function () {
 
         // Social (approved volunteer/org only)
         Route::middleware('social.access')->group(function () {
+
+        Route::put('/posts/{id}/tags', [PostController::class, 'syncTags']);          // polymorphic sync
+        Route::post('/posts/{id}/tags/bulk', [PostController::class, 'bulkTagByOpportunity']);
+            Route::put('/comments/{id}', [CommentController::class, 'update']);
+            Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+            Route::delete('/posts/{id}/media/{mediaId}', [PostController::class, 'deleteMedia']);
+
+            Route::put('/comments/{id}', [CommentController::class, 'update']);
+            Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+            Route::delete('/posts/{id}/media/{mediaId}', [PostController::class, 'deleteMedia']);
+        
             Route::get('/posts', [PostController::class, 'index']);
             Route::post('/posts', [PostController::class, 'store']);
             Route::get('/posts/{id}', [PostController::class, 'show']);
-            Route::put('/posts/{id}/tags', [PostController::class, 'updateTags']);
+
 
             Route::post('/posts/{id}/like', [LikeController::class, 'like']);
             Route::delete('/posts/{id}/like', [LikeController::class, 'unlike']);
@@ -106,6 +150,12 @@ Route::prefix('v1')->group(function () {
             Route::get('/stories', [StoryController::class, 'index']);
             Route::post('/stories', [StoryController::class, 'store']);
             Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
+
+            Route::put('/posts/{id}', [PostController::class, 'update']);
+            Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+            Route::post('/posts/{id}/media', [PostController::class, 'addMedia']);
+
+            Route::post('/stories/{id}/media', [StoryController::class, 'addMedia']);
         });
     });
 });

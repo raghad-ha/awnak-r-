@@ -2,16 +2,26 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class RolesSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        $roles = [
+            'approval_officer',
+            'org_opportunity_manager',
+            'opportunity_approval_officer',
+            'org_volunteer_coordinator',
+            'evaluation_manager',
+        ];
+
+        foreach ($roles as $name) {
+            DB::table('roles')->updateOrInsert(
+                ['name' => $name],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
     }
 }

@@ -13,8 +13,8 @@ return new class extends Migration
     {
     Schema::create('chatbot_messages', function (Blueprint $table) {
     $table->id();
-    $table->foreignId('session_id')->constrained('chatbot_sessions')->cascadeOnDelete();
-    $table->enum('sender', ['user','bot']);
+    $table->foreignId('chatbot_session_id')->constrained()->cascadeOnDelete();
+    $table->enum('sender', ['user', 'bot']);
     $table->text('body');
     $table->timestamps();
 });

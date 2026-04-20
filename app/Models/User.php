@@ -47,4 +47,8 @@ protected $fillable = [
 {
     return $this->hasOne(\App\Models\Organization::class);
 }
+public function volunteerProfile()
+{
+    return $this->hasOne(\App\Models\VolunteerProfile::class);
+}
 }

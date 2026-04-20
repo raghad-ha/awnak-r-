@@ -85,4 +85,37 @@ class StoryController extends Controller
 
         return response()->json(['success'=>true,'message'=>'Story deleted.','data'=>null]);
     }
+    public function addMedia(Request $request, $id)
+{
+    $user = $request->user();
+    abort_if(!$user, 401);
+
+    $story = \App\Models\Story::findOrFail($id);
+
+    abort_if($story->author_user_id !== $user->id, 403, 'You can only add media to your own story.');
+
+    $data = $request->validate([
+        'file' => ['required', 'file', 'max:20480'],
+        'type' => ['nullable', 'in:image,video'],
+    ]);
+
+    $file = $request->file('file');
+    $type = $data['type'] ?? 'image';
+    $path = $file->store('stories', 'public');
+
+    $media = \App\Models\StoryMedia::create([
+        'story_id' => $story->id,
+        'type' => $type,
+        'path' => $path,
+        'thumbnail_path' => null,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Story media uploaded.',
+        'data' => [
+            'media' => $media,
+        ],
+    ], 201);
+}
 }

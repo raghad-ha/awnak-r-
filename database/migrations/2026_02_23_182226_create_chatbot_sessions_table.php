@@ -13,8 +13,9 @@ return new class extends Migration
     {
        Schema::create('chatbot_sessions', function (Blueprint $table) {
     $table->id();
-    $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-    $table->enum('status', ['open','closed'])->default('open');
+    $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+    $table->string('guest_token')->nullable();
+    $table->string('title')->nullable();
     $table->timestamps();
 });
       

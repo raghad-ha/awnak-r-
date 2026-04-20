@@ -49,4 +49,46 @@ class CommentController extends Controller
 
         return response()->json(['success'=>true,'message'=>'Comment added.','data'=>['comment'=>$comment]], 201);
     }
+
+    public function update(Request $request, $id)
+{
+    $user = $request->user();
+    abort_if(!$user, 401);
+
+    $comment = \App\Models\Comment::findOrFail($id);
+      abort_if($comment->user_id !== $user->id && $user->type !== 'staff', 403, 'Not allowed to delete this comment.');
+    $data = $request->validate([
+        'body' => ['required', 'string', 'max:3000'],
+    ]);
+
+    $comment->update([
+        'body' => $data['body'],
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Comment updated.',
+        'data' => [
+            'comment' => $comment,
+        ],
+    ]);
+}
+
+public function destroy(Request $request, $id)
+{
+    $user = $request->user();
+    abort_if(!$user, 401);
+
+    $comment = \App\Models\Comment::findOrFail($id);
+
+    abort_if($comment->user_id !== $user->id && $user->type !== 'staff', 403, 'Not allowed to delete this comment.');
+
+    $comment->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Comment deleted.',
+        'data' => null,
+    ]);
+}
 }
