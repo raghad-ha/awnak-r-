@@ -108,4 +108,18 @@ class OpportunityApprovalController extends Controller
             'data' => null,
         ]);
     }
+    public function destroy(Request $request, $id)
+{
+    $this->ensureApprover($request); // أو غيّرها إلى ensureAdmin حسب نظامك
+    // إذا تحب role مستقل للحذف مثل content_moderator/admin، قلّي
+
+    $opp = \App\Models\Opportunity::findOrFail($id);
+    $opp->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Opportunity deleted by admin.',
+        'data' => null,
+    ]);
+}
 }

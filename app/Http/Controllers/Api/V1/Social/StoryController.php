@@ -30,15 +30,14 @@ class StoryController extends Controller
         abort_if(!$user, 401);
 
         $data = $request->validate([
-            'caption' => ['nullable','string','max:255'],
-            'expires_in_hours' => ['nullable','integer','min:1','max:72'],
-            'media' => ['required','array','min:1'],
-            'media.*' => ['file','max:20480'],
-            'media_types' => ['nullable','array'],
-            'media_types.*' => ['in:image,video'],
-        ]);
-
-        $hours = $data['expires_in_hours'] ?? 24;
+    'expires_in_hours' => ['required', 'integer', 'min:1', 'max:168'],
+    'media' => ['required','array'],
+    'media.*' => ['file','max:20480'],
+    'media_types' => ['required','array'],
+    'media_types.*' => ['in:image,video'],
+    'caption' => ['nullable','string','max:500'],
+]);
+        $hours =(int)$data['expires_in_hours'] ?? 24;
 
         $story = DB::transaction(function () use ($request, $user, $data, $hours) {
 

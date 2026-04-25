@@ -52,6 +52,12 @@ Route::prefix('v1')->group(function () {
 
     // ✅ Protected routes
     Route::middleware('auth:sanctum')->group(function () {
+    Route::delete('/volunteer/applications/{id}', [VolunteerApplicationController::class, 'cancel']);
+        // Org delete own opportunity
+    Route::delete('/org/opportunities/{id}', [OrgOpportunityController::class, 'destroy']);
+
+// Admin delete any opportunity
+    Route::delete('/admin/opportunities/{id}', [OpportunityApprovalController::class, 'destroy']);
         Route::get('/org/volunteers', [VolunteerDirectoryController::class, 'orgIndex']);
         Route::get('/admin/volunteers', [VolunteerDirectoryController::class, 'adminIndex']);
 

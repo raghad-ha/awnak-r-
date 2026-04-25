@@ -67,4 +67,29 @@ class ApplicationController extends Controller
             'data' => $items,
         ]);
     }
+
+    public function cancel(Request $request, $id)
+{
+    $user = $request->user();
+
+    if ($user->status !== 'approved' || $user->type !== 'volunteer') {
+        abort(403, 'Only approved volunteers can cancel applications.');
+    }
+
+    $app = \App\Models\Application::findOrFail($id);
+
+    // must be his own application
+    abort_if($app->volunteer_user_id !== $user->id, 403, 'Not your application.');
+
+    // only pending can be cancelled (as you requested)
+    abort_if($app->status !== 'pending', 422, 'Only pending applications can be cancelled.');
+
+    $app->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Application cancelled.',
+        'data' => null,
+    ]);
+}
 }

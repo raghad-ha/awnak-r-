@@ -117,4 +117,24 @@ class OpportunityController extends Controller
             'data' => ['opportunity' => $opp],
         ]);
     }
+
+
+    public function destroy(Request $request, $id)
+{
+    $org = $this->ensureOrgManager($request); // نفس اللي تستخدمه في store/update
+
+    $opp = \App\Models\Opportunity::where('organization_id', $org->id)->findOrFail($id);
+
+    // optional rule: don't allow deleting approved opportunities (your choice)
+    // if you want allow delete always, remove this condition
+    // abort_if($opp->status === 'approved', 403, 'Cannot delete approved opportunity.');
+
+    $opp->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Opportunity deleted.',
+        'data' => null,
+    ]);
+}
 }
